@@ -1,0 +1,57 @@
+package encryptdecrypt;
+
+import java.io.*;
+import java.util.Scanner;
+
+public class Main {
+    static Scanner scanner;
+    static  String action = "", text = "", inFile = "", outFile = "", algorithm = "shift";
+    static int key = 0;
+
+    public static void main(String[] args) throws IOException {
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i]) {
+                case "-mode" -> action = args[i + 1];
+                case "-key" -> key = Integer.parseInt(args[i + 1]);
+                case "-data" -> text = args[i + 1];
+                case "-in" -> inFile = args[i + 1];
+                case "-out" -> outFile = args[i + 1];
+                case "-alg" -> algorithm = args[i + 1];
+            }
+        }
+        if (!inFile.isEmpty()) {
+            try {
+                scanner = new Scanner(new File(inFile));
+                StringBuilder sb = new StringBuilder();
+                while (scanner.hasNextLine()) {
+                    sb.append(scanner.nextLine()).append("\n");
+                }
+                text = sb.toString();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                scanner.close();
+            }
+        }
+
+        Encoder encoder = EncoderFactory.createEncoder(algorithm);
+
+        String result;
+        if (action.equals("enc")) {
+            result = encoder.encrypt(text, key);
+        } else {
+            result = encoder.decrypt(text, key);
+        }
+
+        if (!outFile.isEmpty()) {
+            File file = new File(outFile);
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(result);
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+        } else {
+            System.out.println(result);
+        }
+    }
+}
