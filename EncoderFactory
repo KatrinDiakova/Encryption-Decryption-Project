@@ -1,0 +1,14 @@
+package encryptdecrypt;
+
+public class EncoderFactory {
+
+    public static Encoder createEncoder(String algorithm) {
+        if (algorithm.equals("unicode")) {
+            return new unicodeEncoder();
+        } else if (algorithm.equals("shift")) {
+            return new shiftEncoder();
+        } else {
+            throw new IllegalArgumentException("Invalid algorithm: " + algorithm);
+        }
+    }
+}
